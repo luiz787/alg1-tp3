@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "Graph.hpp"
+#include "SudokuGraph.hpp"
 
 std::ifstream openInputFile(int argc, char** argv);
 
@@ -11,7 +11,7 @@ int main(int argc, char**argv) {
     uint32_t columns;
     uint32_t rows;
     inputFile >> tableSize >> columns >> rows;
-    Graph graph = Graph(columns * rows);
+    SudokuGraph graph = SudokuGraph(columns, rows);
     for (uint32_t i = 0; i < columns; i++) {
         for (uint32_t j = 0; j < rows; i++) {
             uint32_t value;
