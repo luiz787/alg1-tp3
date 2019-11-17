@@ -6,14 +6,12 @@
 std::ifstream openInputFile(int argc, char** argv);
 
 int main(int argc, char**argv) {
-    std::cout << "Hello, world!";
     auto inputFile = openInputFile(argc, argv);
     uint32_t tableSize;
     uint32_t columns;
     uint32_t rows;
     inputFile >> tableSize >> columns >> rows;
-    SudokuGraph graph = SudokuGraph(tableSize, columns, rows);
-
+    auto vertices = std::vector<Vertice*>();
     uint32_t squareSize = columns * rows;
     for (uint32_t i = 0; i < squareSize; i++) {
         for (uint32_t j = 0; j < squareSize; j++) {
@@ -21,9 +19,12 @@ int main(int argc, char**argv) {
             inputFile >> value;
             std::cout << "Vertice (" << i << "," << j << ") has value " << value << std::endl;
             uint32_t verticeIndex = i * squareSize + j;
-            auto vertice = Vertice(verticeIndex, i, j, value);
+            auto vertice = new Vertice(verticeIndex, i, j, value);
+            vertices.push_back(vertice);
         }
     }
+    SudokuGraph graph = SudokuGraph(tableSize, columns, rows, vertices);
+    graph.solve();
     return 0;
 }
 
