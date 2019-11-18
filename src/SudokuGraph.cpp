@@ -57,6 +57,9 @@ void SudokuGraph::addEdge(uint32_t from, uint32_t to) {
 
 void SudokuGraph::addEdgesToVerticesInSameColumn(uint32_t verticeIndex) {
     uint32_t verticeColumn = getVerticeColumn(verticeIndex);
+    if (verticeIndex == 18) {
+        std::cout << "Processing vertice 18" << std::endl;
+    }
 
     for (uint32_t i = 0; i < amountOfColumns; i++) {
         uint32_t offset = i * amountOfColumns;
@@ -68,7 +71,11 @@ void SudokuGraph::addEdgesToVerticesInSameColumn(uint32_t verticeIndex) {
         auto verticeValue = vertices[verticeIndex]->getValue();
         if (verticeValue != 0) { // vertice already contains a value.
             auto verticeColor = vertices[verticeIndex]->getFinalColor();
+
             auto neighbor = vertices[neighborIndex];
+            if (verticeIndex == 18) {
+                std::cout << "Removing color " << static_cast<int>(verticeColor) << " from neighbor index " << neighbor->getIndex() << std::endl;
+            }
             neighbor->removeColorPossibility(verticeColor);
         }
     }
@@ -132,6 +139,9 @@ void SudokuGraph::addEdgesToVerticesInSameQuadrant(uint32_t verticeIndex) {
 }
 
 void SudokuGraph::tryToAssignColorByCheckingQuadrantExhaustion(const uint32_t verticeIndex) {
+    if (verticeIndex == 2) {
+        std::cout << "VERTICE 2" << std::endl;
+    }
     uint32_t verticeColumn = getVerticeColumn(verticeIndex);
 
     uint32_t entireQuadrantsToLeft = verticeColumn / quadrantColumnWidth;
@@ -159,12 +169,28 @@ void SudokuGraph::tryToAssignColorByCheckingQuadrantExhaustion(const uint32_t ve
             }
         }
     }
+
+    if (verticeIndex == 2) {
+        for (auto neighbor : unassignedNeighbors) {
+            std::cout << "unassignedNeighbors " << neighbor->getIndex() << std::endl;
+        }
+    }
+
     auto currentVertice = vertices[verticeIndex];
     auto currentVerticePossibleColors = currentVertice->getPossibleColors();
     for (auto color : currentVerticePossibleColors) {
+        if (verticeIndex == 2) {
+            std::cout << static_cast<int>(color) << std::endl;
+        }
         bool someNeighborCanBeOfColor = false;
         for (auto neighbor : unassignedNeighbors) {
-            if (neighbor->getPossibleColors().find(color) != neighbor->getPossibleColors().end()) {
+            std::cout << "Checking if " << neighbor->getIndex() << " can be color " << static_cast<int>(color) << std::endl;
+
+            for (auto pColor : neighbor->getPossibleColors()) {
+                std::cout << "neighbor index " << neighbor->getIndex() << " can be color " << static_cast<int>(pColor) << std::endl;
+            }
+            if (neighbor->getPossibleColors().find(color) == neighbor->getPossibleColors().end()) {
+                std::cout << neighbor->getIndex() << " can be " << static_cast<int>(color) << std::endl;
                 someNeighborCanBeOfColor = true;
                 break;
             }
@@ -172,7 +198,7 @@ void SudokuGraph::tryToAssignColorByCheckingQuadrantExhaustion(const uint32_t ve
 
         if (!someNeighborCanBeOfColor) {
             std::cout << "Found potential match. Vertice index " << currentVertice->getIndex() 
-                    << "can be some color but none of its quadrant neighbors can." << std::endl;
+                    << "can be " << static_cast<int>(color) << " but none of its quadrant neighbors can." << std::endl;
         }
     }
 }
@@ -224,6 +250,7 @@ void SudokuGraph::solve() {
     std::cout << "Checking vertices that can be 2 colors." << std::endl;
     for (auto& vertice : vertices) {
         if (vertice->getQuantityOfPossibleColors() == 2) {
+            std::cout << "vertice " << vertice->getIndex() << std::endl;
             tryToAssignColorByCheckingQuadrantExhaustion(vertice->getIndex());
         }
     }

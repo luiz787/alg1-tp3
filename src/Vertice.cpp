@@ -5,7 +5,7 @@ Vertice::Vertice(const uint32_t index, const uint32_t row, const uint32_t column
     this->possibleColors = std::set<Color>();
     if (value != 0) {
         possibleColors.insert(Color(value));
-
+        this->finalColor = Color(value);
     } else {
         for (uint32_t i = 1; i <= instanceSize; i++) {
             possibleColors.insert(Color(i));
