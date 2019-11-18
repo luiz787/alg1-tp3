@@ -18,6 +18,7 @@ SudokuGraph::SudokuGraph(uint32_t problemInstanceSize, uint32_t columns, uint32_
         addEdgesToVerticesInSameColumn(vertice);
         addEdgesToVerticesInSameRow(vertice);
         addEdgesToVerticesInSameQuadrant(vertice);
+        removeAssignedColorFromPeers(vertices[vertice]);
         std::cout << "Added " << this->adjacencyLists[vertice].size() << " neighbors." << std::endl;
     }
 
@@ -133,6 +134,7 @@ void SudokuGraph::solve() {
                 for (uint32_t i = 1; i <= tableSize; i++) {
                     if (usedColors.find(i) == usedColors.end()) {
                         vertice->updateValue(i);
+                        removeAssignedColorFromPeers(vertice);
                         verticesThatGainedColorsInCurrentIteration++;
                         totalColoredVertices++;
                         break;
@@ -155,5 +157,13 @@ void SudokuGraph::printAnswer(const uint32_t totalColoredVertices) const {
             std::cout << vertices[offset + j]->getValue() << " ";
         }
         std::cout << std::endl;
+    }
+}
+
+void SudokuGraph::removeAssignedColorFromPeers(Vertice *vertice) {
+    auto assignedColor = Color(vertice->getValue());
+    auto peersIndexes = adjacencyLists[vertice->getIndex()];
+    for (auto peerIndex : peersIndexes) {
+        vertices[peerIndex]->removeColorPossibility(assignedColor);
     }
 }

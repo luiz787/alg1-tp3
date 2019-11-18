@@ -30,6 +30,8 @@ public:
     void solve();
 
     void printAnswer(uint32_t totalColoredVertices) const;
+
+    void removeAssignedColorFromPeers(Vertice *vertice);
 };
 
 #endif

@@ -1,14 +1,16 @@
 #ifndef ALG1_TP3_VERTICE_HPP
 #define ALG1_TP3_VERTICE_HPP
 
-
 #include <cstdint>
+#include <set>
+#include "Color.hpp"
 
 class Vertice {
 private:
     const uint32_t index;
     const uint32_t row;
     const uint32_t column;
+    std::set<Color> possibleColors;
 
     uint32_t value;
     uint32_t saturation;
@@ -25,6 +27,7 @@ public:
     void setSaturation(uint32_t saturation);
 
     void updateValue(uint32_t newValue);
+    void removeColorPossibility(Color color);
 };
 
 
