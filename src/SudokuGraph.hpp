@@ -32,6 +32,7 @@ public:
     void printAnswer(uint32_t totalColoredVertices) const;
 
     void removeAssignedColorFromPeers(Vertice *vertice);
+    void tryToAssignColorByCheckingQuadrantExhaustion(uint32_t verticeIndex);
 };
 
 #endif

@@ -1,12 +1,13 @@
 #include "Vertice.hpp"
 
-Vertice::Vertice(const uint32_t index, const uint32_t row, const uint32_t column, const uint32_t value) : index(index),
+Vertice::Vertice(const uint32_t index, const uint32_t row, const uint32_t column, const uint32_t value, const uint32_t instanceSize) : index(index),
     row(row),column(column), value(value), saturation(0) {
     this->possibleColors = std::set<Color>();
     if (value != 0) {
         possibleColors.insert(Color(value));
+
     } else {
-        for (uint32_t i = 1; i < 10; i++) {
+        for (uint32_t i = 1; i <= instanceSize; i++) {
             possibleColors.insert(Color(i));
         }
     }
@@ -46,6 +47,22 @@ void Vertice::setSaturation(const uint32_t sat) {
     this->saturation = sat;
 }
 
-void Vertice::removeColorPossibility(Color color) {
+void Vertice::setFinalColor(const Color color) {
+    this->finalColor = color;
+}
+
+void Vertice::removeColorPossibility(const Color color) {
     this->possibleColors.erase(color);
+}
+
+uint32_t Vertice::getQuantityOfPossibleColors() {
+    return this->possibleColors.size();
+}
+
+Color Vertice::getFinalColor() const {
+    return this->finalColor;
+}
+
+std::set<Color> Vertice::getPossibleColors() {
+    return this->possibleColors;
 }
