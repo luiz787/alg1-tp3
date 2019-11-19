@@ -32,7 +32,14 @@ public:
     void printAnswer(uint32_t totalColoredVertices) const;
 
     void removeAssignedColorFromPeers(Vertice *vertice);
-    void tryToAssignColorByCheckingQuadrantExhaustion(uint32_t verticeIndex);
+    void tryToAssignColorByCheckingQuadrantExhaustion(uint32_t verticeIndex, uint32_t &totalColoredVertices,
+                                                      uint32_t &verticesThatGainedColorsInCurrentIteration);
+
+    void assignColorToSaturatedVertices(const std::vector<Vertice *> &copyVertices, uint32_t &totalColoredVertices,
+                                        uint32_t &verticesThatGainedColorsInCurrentIteration);
+
+    void assignColorToExhaustedQuadrants(uint32_t &totalColoredVertices,
+                                         uint32_t &verticesThatGainedColorsInCurrentIteration);
 };
 
 #endif
