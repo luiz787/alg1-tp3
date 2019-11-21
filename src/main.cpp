@@ -12,17 +12,17 @@ int main(int argc, char**argv) {
     uint32_t rows;
     inputFile >> tableSize >> columns >> rows;
     auto vertices = std::vector<Vertice*>();
-    uint32_t squareSize = columns * rows;
+    const uint32_t squareSize = columns * rows;
     for (uint32_t i = 0; i < squareSize; i++) {
         for (uint32_t j = 0; j < squareSize; j++) {
             uint32_t value;
             inputFile >> value;
-            uint32_t verticeIndex = i * squareSize + j;
-            auto vertice = new Vertice(verticeIndex, i, j, value, tableSize);
+            const uint32_t verticeIndex = i * squareSize + j;
+            const auto vertice = new Vertice(verticeIndex, i, j, value, tableSize);
             vertices.push_back(vertice);
         }
     }
-    SudokuGraph graph = SudokuGraph(tableSize, columns, rows, vertices);
+    SudokuGraph graph = SudokuGraph(columns, rows, vertices);
     graph.solve();
     return 0;
 }
