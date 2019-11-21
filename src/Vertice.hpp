@@ -12,6 +12,7 @@ private:
     const uint32_t column;
     std::set<Color> possibleColors;
     Color finalColor;
+    bool isColored;
 
     uint32_t value;
     uint32_t saturation;
@@ -25,6 +26,7 @@ public:
     uint32_t getValue() const;
     uint32_t getSaturation() const;
     uint32_t getIndex() const;
+    bool getIsColored() const;
     Color getFinalColor() const;
     void setSaturation(uint32_t saturation);
     void setFinalColor(Color color);

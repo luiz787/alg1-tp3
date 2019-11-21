@@ -17,7 +17,6 @@ int main(int argc, char**argv) {
         for (uint32_t j = 0; j < squareSize; j++) {
             uint32_t value;
             inputFile >> value;
-            std::cout << "Vertice (" << i << "," << j << ") has value " << value << std::endl;
             uint32_t verticeIndex = i * squareSize + j;
             auto vertice = new Vertice(verticeIndex, i, j, value, tableSize);
             vertices.push_back(vertice);

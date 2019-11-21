@@ -38,8 +38,17 @@ public:
     void assignColorToSaturatedVertices(const std::vector<Vertice *> &copyVertices, uint32_t &totalColoredVertices,
                                         uint32_t &verticesThatGainedColorsInCurrentIteration);
 
-    void assignColorToExhaustedQuadrants(uint32_t &totalColoredVertices,
-                                         uint32_t &verticesThatGainedColorsInCurrentIteration);
+    void assignColorToExhaustedUnit(uint32_t &totalColoredVertices,
+                                    uint32_t &verticesThatGainedColorsInCurrentIteration);
+
+    void tryToAssignColorByCheckingRowExhaustion(uint32_t verticeIndex, uint32_t &totalColoredVertices,
+                                                 uint32_t &verticesThatGainedColorsInCurrentIteration);
+
+    void tryToAssignColorByCheckingColumnExhaustion(uint32_t verticeIndex, uint32_t &totalColoredVertices,
+                                                    uint32_t &verticesThatGainedColorsInCurrentIteration);
+
+    void tryViaExhaustion(uint32_t &totalColoredVertices, uint32_t &verticesThatGainedColorsInCurrentIteration,
+                          const std::set<Vertice *> &unassignedNeighbors, Vertice *currentVertice);
 };
 
 #endif

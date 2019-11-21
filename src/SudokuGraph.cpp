@@ -14,19 +14,11 @@ SudokuGraph::SudokuGraph(uint32_t problemInstanceSize, uint32_t columns, uint32_
     const uint32_t amountOfVertices = pow(problemInstanceSize, 2);
     this->adjacencyLists = std::vector<std::set<uint32_t>>(amountOfVertices, std::set<uint32_t>());
     for (uint32_t vertice = 0; vertice < amountOfVertices; vertice++) {
-        std::cout << "Processing vertice " << vertice << std::endl;
         addEdgesToVerticesInSameColumn(vertice);
         addEdgesToVerticesInSameRow(vertice);
         addEdgesToVerticesInSameQuadrant(vertice);
         removeAssignedColorFromPeers(vertices[vertice]);
-        std::cout << "Added " << this->adjacencyLists[vertice].size() << " neighbors." << std::endl;
     }
-
-    for (uint32_t vertice = 0; vertice < amountOfVertices; vertice++) {
-        std::cout << "Vertice " << vertice << " has " << vertices[vertice]->getQuantityOfPossibleColors() << " possible colors..." << std::endl;
-    }
-
-    std::cout << "Computed sat..." << std::endl;
 }
 
 void SudokuGraph::computeSaturation() const {
@@ -57,10 +49,6 @@ void SudokuGraph::addEdge(uint32_t from, uint32_t to) {
 
 void SudokuGraph::addEdgesToVerticesInSameColumn(uint32_t verticeIndex) {
     uint32_t verticeColumn = getVerticeColumn(verticeIndex);
-    if (verticeIndex == 18) {
-        std::cout << "Processing vertice 18" << std::endl;
-    }
-
     for (uint32_t i = 0; i < amountOfColumns; i++) {
         uint32_t offset = i * amountOfColumns;
         uint32_t neighborIndex = offset + verticeColumn;
@@ -73,9 +61,6 @@ void SudokuGraph::addEdgesToVerticesInSameColumn(uint32_t verticeIndex) {
             auto verticeColor = vertices[verticeIndex]->getFinalColor();
 
             auto neighbor = vertices[neighborIndex];
-            if (verticeIndex == 18) {
-                std::cout << "Removing color " << static_cast<int>(verticeColor) << " from neighbor index " << neighbor->getIndex() << std::endl;
-            }
             neighbor->removeColorPossibility(verticeColor);
         }
     }
@@ -168,29 +153,8 @@ void SudokuGraph::tryToAssignColorByCheckingQuadrantExhaustion(const uint32_t ve
         }
     }
     auto currentVertice = vertices[verticeIndex];
-    auto currentVerticePossibleColors = currentVertice->getPossibleColors();
-    for (auto color : currentVerticePossibleColors) {
-        bool someNeighborCanBeOfColor = false;
-        for (auto neighbor : unassignedNeighbors) {
-            auto possibleNeighborColors = neighbor->getPossibleColors();
-            bool contains = possibleNeighborColors.find(color) != possibleNeighborColors.end();
-            if (contains) {
-                someNeighborCanBeOfColor = true;
-                break;
-            }
-        }
-
-        if (!someNeighborCanBeOfColor) {
-            std::cout << "Found potential match. Vertice index " << currentVertice->getIndex() 
-                    << "can be " << static_cast<int>(color) << " but none of its quadrant neighbors can." << std::endl;
-            currentVertice->setFinalColor(color);
-            verticesThatGainedColorsInCurrentIteration++;
-            totalColoredVertices++;
-            currentVertice->updateValue(static_cast<int>(color));
-            removeAssignedColorFromPeers(currentVertice);
-            break;
-        }
-    }
+    tryViaExhaustion(totalColoredVertices, verticesThatGainedColorsInCurrentIteration, unassignedNeighbors,
+                     currentVertice);
 }
 
 void SudokuGraph::solve() {
@@ -208,41 +172,34 @@ void SudokuGraph::solve() {
         computeSaturation();
         std::sort(copyVertices.begin(), copyVertices.end(), Vertice::compareVerticesByDescendingSaturation);
         assignColorToSaturatedVertices(copyVertices, totalColoredVertices, verticesThatGainedColorsInCurrentIteration);
-        assignColorToExhaustedQuadrants(totalColoredVertices, verticesThatGainedColorsInCurrentIteration);
+        assignColorToExhaustedUnit(totalColoredVertices, verticesThatGainedColorsInCurrentIteration);
     } while (verticesThatGainedColorsInCurrentIteration > 0);
     printAnswer(totalColoredVertices);
 }
 
-void SudokuGraph::assignColorToExhaustedQuadrants(uint32_t &totalColoredVertices,
-                                                  uint32_t &verticesThatGainedColorsInCurrentIteration) {
+void SudokuGraph::assignColorToExhaustedUnit(uint32_t &totalColoredVertices,
+                                             uint32_t &verticesThatGainedColorsInCurrentIteration) {
     for (auto& vertice : vertices) {
-        if (vertice->getQuantityOfPossibleColors() == 2) {
+        if (vertice->getQuantityOfPossibleColors() > 1 && vertice->getValue() == 0) {
             tryToAssignColorByCheckingQuadrantExhaustion(vertice->getIndex(), totalColoredVertices, verticesThatGainedColorsInCurrentIteration);
+            tryToAssignColorByCheckingRowExhaustion(vertice->getIndex(), totalColoredVertices, verticesThatGainedColorsInCurrentIteration);
+            tryToAssignColorByCheckingColumnExhaustion(vertice->getIndex(), totalColoredVertices, verticesThatGainedColorsInCurrentIteration);
         }
     }
 }
 
-void
-SudokuGraph::assignColorToSaturatedVertices(const std::vector<Vertice *> &copyVertices, uint32_t &totalColoredVertices,
+void SudokuGraph::assignColorToSaturatedVertices(const std::vector<Vertice *> &copyVertices, uint32_t &totalColoredVertices,
                                             uint32_t &verticesThatGainedColorsInCurrentIteration) {
     for (auto& vertice : copyVertices) {
-        if (vertice->getSaturation() == tableSize - 1 && vertice->getValue() == 0) {
-            auto adjacencyList = adjacencyLists[vertice->getIndex()];
-            auto usedColors = std::set<uint32_t>();
-            for (auto& i : adjacencyList) {
-                if (vertices[i]->getValue() != 0) {
-                    usedColors.insert(vertices[i]->getValue());
-                }
-            }
-            for (uint32_t i = 1; i <= tableSize; i++) {
-                if (usedColors.find(i) == usedColors.end()) {
-                    vertice->updateValue(i);
-                    removeAssignedColorFromPeers(vertice);
-                    verticesThatGainedColorsInCurrentIteration++;
-                    totalColoredVertices++;
-                    break;
-                }
-            }
+        if (vertice->getQuantityOfPossibleColors() == 1 && vertice->getValue() == 0) {
+            auto color = *vertice->getPossibleColors().begin();
+
+            vertice->updateValue(static_cast<int>(color));
+            vertice->setFinalColor(color);
+
+            removeAssignedColorFromPeers(vertice);
+            verticesThatGainedColorsInCurrentIteration++;
+            totalColoredVertices++;
         }
     }
 }
@@ -259,6 +216,7 @@ void SudokuGraph::printAnswer(const uint32_t totalColoredVertices) const {
         }
         std::cout << std::endl;
     }
+    std::cout << "Colori " << totalColoredVertices << std::endl;
 }
 
 void SudokuGraph::removeAssignedColorFromPeers(Vertice *vertice) {
@@ -267,4 +225,77 @@ void SudokuGraph::removeAssignedColorFromPeers(Vertice *vertice) {
     for (auto peerIndex : peersIndexes) {
         vertices[peerIndex]->removeColorPossibility(assignedColor);
     }
+}
+
+void SudokuGraph::tryToAssignColorByCheckingRowExhaustion(uint32_t verticeIndex, uint32_t &totalColoredVertices,
+                                                          uint32_t &verticesThatGainedColorsInCurrentIteration) {
+    uint32_t rowSize = amountOfColumns;
+    uint32_t rowBeginning = verticeIndex - this->getVerticeColumn(verticeIndex);
+    uint32_t rowEnd = rowBeginning + rowSize;
+    auto unassignedNeighbors = std::set<Vertice*>();
+    for (uint32_t i = rowBeginning; i < rowEnd; i++) {
+        if (i == verticeIndex) {
+            continue;
+        }
+        auto neighbor = vertices[i];
+        if (neighbor->getValue() == 0) {
+            unassignedNeighbors.insert(neighbor);
+        }
+
+    }
+
+    auto currentVertice = vertices[verticeIndex];
+    tryViaExhaustion(totalColoredVertices, verticesThatGainedColorsInCurrentIteration, unassignedNeighbors,
+                     currentVertice);
+}
+
+void SudokuGraph::tryViaExhaustion(uint32_t &totalColoredVertices, uint32_t &verticesThatGainedColorsInCurrentIteration,
+                                   const std::set<Vertice *> &unassignedNeighbors, Vertice *currentVertice) {
+    if (currentVertice->getValue() != 0) {
+        return; // The vertice could already have a value...
+    }
+    auto currentVerticePossibleColors = currentVertice->getPossibleColors();
+    for (auto color : currentVerticePossibleColors) {
+        bool someNeighborCanBeOfColor = false;
+        for (auto neighbor : unassignedNeighbors) {
+            auto possibleNeighborColors = neighbor->getPossibleColors();
+            bool contains = possibleNeighborColors.find(color) != possibleNeighborColors.end();
+            if (contains) {
+                someNeighborCanBeOfColor = true;
+                break;
+            }
+        }
+
+        if (!someNeighborCanBeOfColor) {
+            std::cout << "Found potential match. Vertice index " << currentVertice->getIndex()
+                      << "can be " << static_cast<int>(color) << " but none of its quadrant neighbors can." << std::endl;
+            currentVertice->setFinalColor(color);
+            verticesThatGainedColorsInCurrentIteration++;
+            totalColoredVertices++;
+            currentVertice->updateValue(static_cast<int>(color));
+            removeAssignedColorFromPeers(currentVertice);
+            break;
+        }
+    }
+}
+
+void SudokuGraph::tryToAssignColorByCheckingColumnExhaustion(uint32_t verticeIndex, uint32_t &totalColoredVertices,
+                                                             uint32_t &verticesThatGainedColorsInCurrentIteration) {
+    uint32_t verticeColumn = getVerticeColumn(verticeIndex);
+    auto unassignedNeighbors = std::set<Vertice*>();
+    for (uint32_t i = 0; i < amountOfColumns; i++) {
+        uint32_t offset = i * amountOfColumns;
+        uint32_t neighborIndex = offset + verticeColumn;
+        if (neighborIndex == verticeIndex) {
+            continue;
+        }
+        auto neighbor = vertices[neighborIndex];
+        if (neighbor->getValue() == 0) {
+            unassignedNeighbors.insert(neighbor);
+        }
+    }
+
+    auto currentVertice = vertices[verticeIndex];
+    tryViaExhaustion(totalColoredVertices, verticesThatGainedColorsInCurrentIteration, unassignedNeighbors,
+                     currentVertice);
 }

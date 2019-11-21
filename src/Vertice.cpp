@@ -6,6 +6,7 @@ Vertice::Vertice(const uint32_t index, const uint32_t row, const uint32_t column
     if (value != 0) {
         possibleColors.insert(Color(value));
         this->finalColor = Color(value);
+        this->isColored = true;
     } else {
         for (uint32_t i = 1; i <= instanceSize; i++) {
             possibleColors.insert(Color(i));
@@ -49,6 +50,7 @@ void Vertice::setSaturation(const uint32_t sat) {
 
 void Vertice::setFinalColor(const Color color) {
     this->finalColor = color;
+    this->isColored = true;
 }
 
 void Vertice::removeColorPossibility(const Color color) {
@@ -65,4 +67,8 @@ Color Vertice::getFinalColor() const {
 
 std::set<Color> Vertice::getPossibleColors() {
     return this->possibleColors;
+}
+
+bool Vertice::getIsColored() const {
+    return this->isColored;
 }
