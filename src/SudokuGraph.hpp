@@ -9,27 +9,44 @@
 
 class SudokuGraph {
 private:
-    std::vector<std::set<uint32_t>> adjacencyLists;
     std::vector<Vertice*> vertices;
-    uint32_t tableSize;
-    uint32_t quadrantColumnWidth;
-    uint32_t quadrantRowHeight;
-    uint32_t amountOfColumns;
-    uint32_t amountOfRows;
-    void addEdgesToVerticesInSameColumn(uint32_t vertice);
-    void addEdgesToVerticesInSameRow(uint32_t verticeIndex);
-    void addEdgesToVerticesInSameQuadrant(uint32_t vertice);
-public:
-    SudokuGraph(uint32_t problemInstanceSize, uint32_t columns, uint32_t rows, const std::vector<Vertice*>& vertices);
-    ~SudokuGraph();
-    void addEdge(uint32_t from, uint32_t to);
+    const uint32_t quadrantColumnWidth;
+    const uint32_t quadrantRowHeight;
+    const uint32_t amountOfColumns;
+    const uint32_t amountOfRows;
 
+    void addEdgesToVerticesInSameColumn(Vertice *vertice);
+    void addEdgesToVerticesInSameRow(Vertice *vertice);
+    void addEdgesToVerticesInSameQuadrant(Vertice *vertice);
     uint32_t getVerticeColumn(uint32_t verticeIndex) const;
     uint32_t getVerticeRow(uint32_t verticeIndex) const;
-    void computeSaturation() const;
-    void solve();
 
     void printAnswer(uint32_t totalColoredVertices) const;
+
+    void removeAssignedColorFromNeighbors(Vertice *vertice);
+
+
+    void assignColorToSaturatedVertices(uint32_t &totalColoredVertices,
+                                        uint32_t &verticesThatGainedColorsInCurrentIteration);
+
+    void assignColorToExhaustedUnits(uint32_t &totalColoredVertices,
+                                     uint32_t &verticesThatGainedColorsInCurrentIteration);
+
+    void tryToAssignColorByCheckingRowExhaustion(Vertice *vertice, uint32_t &totalColoredVertices,
+                                                 uint32_t &verticesThatGainedColorsInCurrentIteration);
+    void tryToAssignColorByCheckingColumnExhaustion(Vertice *vertice, uint32_t &totalColoredVertices,
+                                                    uint32_t &verticesThatGainedColorsInCurrentIteration);
+    void tryToAssignColorByCheckingQuadrantExhaustion(Vertice *vertice, uint32_t &totalColoredVertices,
+                                                    uint32_t &verticesThatGainedColorsInCurrentIteration);
+
+    void assignColorToVerticeIfPossible(Vertice *currentVertice, const std::set<Vertice *> &unassignedNeighbors,
+                                        uint32_t &totalColoredVertices,
+                                        uint32_t &verticesThatGainedColorsInCurrentIteration);
+public:
+    SudokuGraph(uint32_t columns, uint32_t rows, const std::vector<Vertice *> &vertices);
+    ~SudokuGraph();
+
+    void solve();
 };
 
 #endif
