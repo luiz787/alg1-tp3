@@ -44,8 +44,9 @@ public:
     void tryToAssignColorByCheckingColumnExhaustion(Vertice *vertice, uint32_t &totalColoredVertices,
                                                     uint32_t &verticesThatGainedColorsInCurrentIteration);
 
-    void tryViaExhaustion(uint32_t &totalColoredVertices, uint32_t &verticesThatGainedColorsInCurrentIteration,
-                          const std::set<Vertice *> &unassignedNeighbors, Vertice *currentVertice);
+    void tryViaExhaustion(Vertice *currentVertice, const std::set<Vertice *> &unassignedNeighbors,
+                          uint32_t &totalColoredVertices,
+                          uint32_t &verticesThatGainedColorsInCurrentIteration);
 };
 
 #endif

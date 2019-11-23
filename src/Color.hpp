@@ -2,6 +2,7 @@
 #define ALG1_TP3_COLOR_HPP
 
 enum class Color {
+    UNASSIGNED = 0,
     BLACK = 1,
     BLUE = 2,
     BROWN = 3,

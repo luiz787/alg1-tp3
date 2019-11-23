@@ -14,6 +14,7 @@ Vertice::Vertice(const uint32_t index, const uint32_t row, const uint32_t column
         this->finalColor = color;
         this->colored = true;
     } else {
+        this->finalColor = Color::UNASSIGNED;
         for (uint32_t i = 1; i <= instanceSize; i++) {
             possibleColors.insert(Color(i));
         }
