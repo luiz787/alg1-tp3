@@ -1,7 +1,8 @@
+#include <iostream>
 #include "Vertice.hpp"
 
-Vertice::Vertice(const uint32_t index, const uint32_t row, const uint32_t column, const uint32_t value,
-        const uint32_t instanceSize) : index(index), row(row), column(column), value(value) {
+Vertice::Vertice(const uint32_t index, const uint32_t value,
+        const uint32_t instanceSize) : index(index), value(value) {
     this->adjacencyList = std::set<uint32_t>();
     this->rowNeighbors = std::set<uint32_t>();
     this->columnNeighbors = std::set<uint32_t>();
@@ -9,12 +10,10 @@ Vertice::Vertice(const uint32_t index, const uint32_t row, const uint32_t column
 
     this->possibleColors = std::set<Color>();
     if (value != 0) {
-        auto color = Color(value);
-        possibleColors.insert(color);
-        this->finalColor = color;
-        this->colored = true;
+        possibleColors.insert(Color(value));
+        this->color = Color(value);
     } else {
-        this->finalColor = Color::UNASSIGNED;
+        this->color = Color::UNASSIGNED;
         for (uint32_t i = 1; i <= instanceSize; i++) {
             possibleColors.insert(Color(i));
         }
@@ -23,20 +22,8 @@ Vertice::Vertice(const uint32_t index, const uint32_t row, const uint32_t column
 
 Vertice::~Vertice() = default;
 
-uint32_t Vertice::getRow() const {
-    return row;
-}
-
-uint32_t Vertice::getColumn() const {
-    return column;
-}
-
 uint32_t Vertice::getIndex() const {
     return index;
-}
-
-uint32_t Vertice::getValue() const {
-    return value;
 }
 
 void Vertice::updateValue(const uint32_t newValue) {
@@ -44,8 +31,7 @@ void Vertice::updateValue(const uint32_t newValue) {
 }
 
 void Vertice::setFinalColor(const Color color) {
-    this->finalColor = color;
-    this->colored = true;
+    this->color = color;
 }
 
 void Vertice::removeColorPossibility(const Color color) {
@@ -56,8 +42,8 @@ uint32_t Vertice::getAmountOfPossibleColors() {
     return this->possibleColors.size();
 }
 
-Color Vertice::getFinalColor() const {
-    return this->finalColor;
+Color Vertice::getColor() const {
+    return this->color;
 }
 
 std::set<Color> Vertice::getPossibleColors() {
@@ -65,11 +51,11 @@ std::set<Color> Vertice::getPossibleColors() {
 }
 
 bool Vertice::isColored() const {
-    return this->colored;
+    return this->color != Color::UNASSIGNED;
 }
 
-void Vertice::addEdge(const uint32_t to) {
-    this->adjacencyList.insert(to);
+void Vertice::addNeighbor(const uint32_t neighbor) {
+    this->adjacencyList.insert(neighbor);
 }
 
 std::set<uint32_t> Vertice::getAdjacencyList() const {

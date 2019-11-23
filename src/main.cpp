@@ -18,12 +18,16 @@ int main(int argc, char**argv) {
             uint32_t value;
             inputFile >> value;
             const uint32_t verticeIndex = i * squareSize + j;
-            const auto vertice = new Vertice(verticeIndex, i, j, value, tableSize);
+            const auto vertice = new Vertice(verticeIndex, value, tableSize);
             vertices.push_back(vertice);
         }
     }
     SudokuGraph graph = SudokuGraph(columns, rows, vertices);
     graph.solve();
+
+    for (auto vertice : vertices) {
+        delete(vertice);
+    }
     return 0;
 }
 

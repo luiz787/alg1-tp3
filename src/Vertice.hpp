@@ -8,11 +8,8 @@
 class Vertice {
 private:
     const uint32_t index;
-    const uint32_t row;
-    const uint32_t column;
     std::set<Color> possibleColors;
-    Color finalColor;
-    bool colored;
+    Color color;
     std::set<uint32_t> adjacencyList;
     std::set<uint32_t> rowNeighbors;
     std::set<uint32_t> columnNeighbors;
@@ -20,17 +17,14 @@ private:
 
     uint32_t value;
 public:
-    Vertice(uint32_t index, uint32_t row, uint32_t column, uint32_t value, uint32_t instanceSize);
+    Vertice(uint32_t index, uint32_t value, uint32_t instanceSize);
     ~Vertice();
 
-    uint32_t getRow() const;
-    uint32_t getColumn() const;
-    uint32_t getValue() const;
     std::set<uint32_t> getAdjacencyList() const;
 
     uint32_t getIndex() const;
     bool isColored() const;
-    Color getFinalColor() const;
+    Color getColor() const;
 
     void setFinalColor(Color color);
     uint32_t getAmountOfPossibleColors();
@@ -39,7 +33,7 @@ public:
     void updateValue(uint32_t newValue);
     void removeColorPossibility(Color color);
 
-    void addEdge(uint32_t to);
+    void addNeighbor(uint32_t neighbor);
     void addRowNeighbor(uint32_t neighborIndex);
     void addColumnNeighbor(uint32_t neighborIndex);
     void addQuadrantNeighbor(uint32_t neighborIndex);
