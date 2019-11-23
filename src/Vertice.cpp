@@ -51,7 +51,7 @@ void Vertice::removeColorPossibility(const Color color) {
     this->possibleColors.erase(color);
 }
 
-uint32_t Vertice::getQuantityOfPossibleColors() {
+uint32_t Vertice::getAmountOfPossibleColors() {
     return this->possibleColors.size();
 }
 

@@ -33,7 +33,7 @@ public:
     Color getFinalColor() const;
 
     void setFinalColor(Color color);
-    uint32_t getQuantityOfPossibleColors();
+    uint32_t getAmountOfPossibleColors();
     std::set<Color> getPossibleColors();
 
     void updateValue(uint32_t newValue);

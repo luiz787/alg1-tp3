@@ -29,19 +29,19 @@ public:
     void printAnswer(uint32_t totalColoredVertices) const;
 
     void removeAssignedColorFromPeers(Vertice *vertice);
-    void tryToAssignColorByCheckingQuadrantExhaustion(uint32_t verticeIndex, uint32_t &totalColoredVertices,
+    void tryToAssignColorByCheckingQuadrantExhaustion(Vertice *vertice, uint32_t &totalColoredVertices,
                                                       uint32_t &verticesThatGainedColorsInCurrentIteration);
 
-    void assignColorToSaturatedVertices(const std::vector<Vertice *> &copyVertices, uint32_t &totalColoredVertices,
+    void assignColorToSaturatedVertices(uint32_t &totalColoredVertices,
                                         uint32_t &verticesThatGainedColorsInCurrentIteration);
 
     void assignColorToExhaustedUnit(uint32_t &totalColoredVertices,
                                     uint32_t &verticesThatGainedColorsInCurrentIteration);
 
-    void tryToAssignColorByCheckingRowExhaustion(uint32_t verticeIndex, uint32_t &totalColoredVertices,
+    void tryToAssignColorByCheckingRowExhaustion(Vertice *vertice, uint32_t &totalColoredVertices,
                                                  uint32_t &verticesThatGainedColorsInCurrentIteration);
 
-    void tryToAssignColorByCheckingColumnExhaustion(uint32_t verticeIndex, uint32_t &totalColoredVertices,
+    void tryToAssignColorByCheckingColumnExhaustion(Vertice *vertice, uint32_t &totalColoredVertices,
                                                     uint32_t &verticesThatGainedColorsInCurrentIteration);
 
     void tryViaExhaustion(uint32_t &totalColoredVertices, uint32_t &verticesThatGainedColorsInCurrentIteration,
