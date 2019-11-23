@@ -16,5 +16,5 @@ declare -a tests=("221" "222" "223" "224" "225"
 for i in "${tests[@]}"
 do
 	echo "Testando entrada dataset3/$i.txt"
-	./bin/tp2.exe dataset3/$i.txt > tests/output/$i.out
+	./bin/tp3.exe dataset3/$i.txt > tests/output/$i.out
 done
