@@ -2,12 +2,17 @@
 
 Vertice::Vertice(const uint32_t index, const uint32_t row, const uint32_t column, const uint32_t value,
         const uint32_t instanceSize) : index(index), row(row), column(column), value(value) {
+    this->adjacencyList = std::set<uint32_t>();
+    this->rowNeighbors = std::set<uint32_t>();
+    this->columnNeighbors = std::set<uint32_t>();
+    this->quadrantNeighbors = std::set<uint32_t>();
+
     this->possibleColors = std::set<Color>();
     if (value != 0) {
         auto color = Color(value);
         possibleColors.insert(color);
         this->finalColor = color;
-        this->isColored = true;
+        this->colored = true;
     } else {
         for (uint32_t i = 1; i <= instanceSize; i++) {
             possibleColors.insert(Color(i));
@@ -39,7 +44,7 @@ void Vertice::updateValue(const uint32_t newValue) {
 
 void Vertice::setFinalColor(const Color color) {
     this->finalColor = color;
-    this->isColored = true;
+    this->colored = true;
 }
 
 void Vertice::removeColorPossibility(const Color color) {
@@ -58,6 +63,38 @@ std::set<Color> Vertice::getPossibleColors() {
     return this->possibleColors;
 }
 
-bool Vertice::getIsColored() const {
-    return this->isColored;
+bool Vertice::isColored() const {
+    return this->colored;
+}
+
+void Vertice::addEdge(const uint32_t to) {
+    this->adjacencyList.insert(to);
+}
+
+std::set<uint32_t> Vertice::getAdjacencyList() const {
+    return adjacencyList;
+}
+
+void Vertice::addRowNeighbor(const uint32_t neighborIndex) {
+    this->rowNeighbors.insert(neighborIndex);
+}
+
+void Vertice::addColumnNeighbor(const uint32_t neighborIndex) {
+    this->columnNeighbors.insert(neighborIndex);
+}
+
+void Vertice::addQuadrantNeighbor(const uint32_t neighborIndex) {
+    this->quadrantNeighbors.insert(neighborIndex);
+}
+
+const std::set<uint32_t>& Vertice::getRowNeighbors() const {
+    return rowNeighbors;
+}
+
+const std::set<uint32_t>& Vertice::getColumnNeighbors() const {
+    return columnNeighbors;
+}
+
+const std::set<uint32_t>& Vertice::getQuadrantNeighbors() const {
+    return quadrantNeighbors;
 }

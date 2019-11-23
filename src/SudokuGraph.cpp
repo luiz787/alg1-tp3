@@ -1,4 +1,3 @@
-#include <cmath>
 #include <iostream>
 #include <algorithm>
 #include "SudokuGraph.hpp"
@@ -8,23 +7,18 @@ SudokuGraph::SudokuGraph(const uint32_t columns, const uint32_t rows, const std:
         : quadrantColumnWidth(columns), quadrantRowHeight(rows), amountOfColumns(columns * rows),
         amountOfRows(columns * rows) {
     this->vertices = vertices;
-    const uint32_t amountOfVertices = vertices.size();
-    this->adjacencyLists = std::vector<std::set<uint32_t>>(amountOfVertices, std::set<uint32_t>());
-    for (uint32_t vertice = 0; vertice < vertices.size(); vertice++) {
+    for (auto vertice : this->vertices) {
         addEdgesToVerticesInSameColumn(vertice);
         addEdgesToVerticesInSameRow(vertice);
         addEdgesToVerticesInSameQuadrant(vertice);
-        removeAssignedColorFromPeers(vertices[vertice]);
+        removeAssignedColorFromPeers(vertice);
     }
 }
 
 SudokuGraph::~SudokuGraph() = default;
 
-void SudokuGraph::addEdge(const uint32_t from, const uint32_t to) {
-    this->adjacencyLists[from].insert(to);
-}
-
-void SudokuGraph::addEdgesToVerticesInSameColumn(const uint32_t verticeIndex) {
+void SudokuGraph::addEdgesToVerticesInSameColumn(Vertice *vertice) {
+    const auto verticeIndex = vertice->getIndex();
     const uint32_t verticeColumn = getVerticeColumn(verticeIndex);
     for (uint32_t i = 0; i < amountOfColumns; i++) {
         const uint32_t offset = i * amountOfColumns;
@@ -32,9 +26,10 @@ void SudokuGraph::addEdgesToVerticesInSameColumn(const uint32_t verticeIndex) {
         if (neighborIndex == verticeIndex) {
             continue;
         }
-        this->addEdge(verticeIndex, neighborIndex);
-        if (vertices[verticeIndex]->getIsColored()) { // vertice already contains a value.
-            const auto verticeColor = vertices[verticeIndex]->getFinalColor();
+        vertice->addEdge(neighborIndex);
+        vertice->addColumnNeighbor(neighborIndex);
+        if (vertice->isColored()) { // vertice already contains a value.
+            const auto verticeColor = vertice->getFinalColor();
 
             const auto neighbor = vertices[neighborIndex];
             neighbor->removeColorPossibility(verticeColor);
@@ -50,7 +45,8 @@ uint32_t SudokuGraph::getVerticeRow(const uint32_t verticeIndex) const {
     return verticeIndex / amountOfColumns;
 }
 
-void SudokuGraph::addEdgesToVerticesInSameRow(const uint32_t verticeIndex) {
+void SudokuGraph::addEdgesToVerticesInSameRow(Vertice *vertice) {
+    const auto verticeIndex = vertice->getIndex();
     const uint32_t rowSize = amountOfColumns;
     const uint32_t rowBeginning = verticeIndex - this->getVerticeColumn(verticeIndex);
     const uint32_t rowEnd = rowBeginning + rowSize;
@@ -58,16 +54,18 @@ void SudokuGraph::addEdgesToVerticesInSameRow(const uint32_t verticeIndex) {
         if (i == verticeIndex) {
             continue;
         }
-        this->addEdge(verticeIndex, i);
-        if (vertices[verticeIndex]->getIsColored()) { // vertice already contains a value.
-            const auto verticeColor = vertices[verticeIndex]->getFinalColor();
+        vertice->addEdge(i);
+        vertice->addRowNeighbor(i);
+        if (vertice->isColored()) { // vertice already contains a value.
+            const auto verticeColor = vertice->getFinalColor();
             const auto neighbor = vertices[i];
             neighbor->removeColorPossibility(verticeColor);
         }
     }
 }
 
-void SudokuGraph::addEdgesToVerticesInSameQuadrant(const uint32_t verticeIndex) {
+void SudokuGraph::addEdgesToVerticesInSameQuadrant(Vertice *vertice) {
+    const auto verticeIndex = vertice->getIndex();
     const uint32_t verticeColumn = getVerticeColumn(verticeIndex);
 
     const uint32_t entireQuadrantsToLeft = verticeColumn / quadrantColumnWidth;
@@ -87,9 +85,10 @@ void SudokuGraph::addEdgesToVerticesInSameQuadrant(const uint32_t verticeIndex) 
             if (neighborIndex == verticeIndex) {
                 continue;
             }
-            this->addEdge(verticeIndex, neighborIndex);
-            if (vertices[verticeIndex]->getIsColored()) { // vertice already contains a value.
-                const auto verticeColor = vertices[verticeIndex]->getFinalColor();
+            vertice->addEdge(neighborIndex);
+            vertice->addQuadrantNeighbor(neighborIndex);
+            if (vertice->isColored()) { // vertice already contains a value.
+                const auto verticeColor = vertice->getFinalColor();
                 const auto neighbor = vertices[neighborIndex];
                 neighbor->removeColorPossibility(verticeColor);
             }
@@ -193,7 +192,7 @@ void SudokuGraph::printAnswer(const uint32_t totalColoredVertices) const {
 
 void SudokuGraph::removeAssignedColorFromPeers(Vertice *vertice) {
     const auto assignedColor = Color(vertice->getValue());
-    const auto peersIndexes = adjacencyLists[vertice->getIndex()];
+    const auto peersIndexes = vertice->getAdjacencyList();
     for (auto peerIndex : peersIndexes) {
         vertices[peerIndex]->removeColorPossibility(assignedColor);
     }

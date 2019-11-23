@@ -9,19 +9,17 @@
 
 class SudokuGraph {
 private:
-    std::vector<std::set<uint32_t>> adjacencyLists;
     std::vector<Vertice*> vertices;
     const uint32_t quadrantColumnWidth;
     const uint32_t quadrantRowHeight;
     const uint32_t amountOfColumns;
     const uint32_t amountOfRows;
-    void addEdgesToVerticesInSameColumn(uint32_t vertice);
-    void addEdgesToVerticesInSameRow(uint32_t verticeIndex);
-    void addEdgesToVerticesInSameQuadrant(uint32_t vertice);
+    void addEdgesToVerticesInSameColumn(Vertice *vertice);
+    void addEdgesToVerticesInSameRow(Vertice *vertice);
+    void addEdgesToVerticesInSameQuadrant(Vertice *vertice);
 public:
     SudokuGraph(uint32_t columns, uint32_t rows, const std::vector<Vertice *> &vertices);
     ~SudokuGraph();
-    void addEdge(uint32_t from, uint32_t to);
 
     uint32_t getVerticeColumn(uint32_t verticeIndex) const;
     uint32_t getVerticeRow(uint32_t verticeIndex) const;

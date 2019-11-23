@@ -12,7 +12,11 @@ private:
     const uint32_t column;
     std::set<Color> possibleColors;
     Color finalColor;
-    bool isColored;
+    bool colored;
+    std::set<uint32_t> adjacencyList;
+    std::set<uint32_t> rowNeighbors;
+    std::set<uint32_t> columnNeighbors;
+    std::set<uint32_t> quadrantNeighbors;
 
     uint32_t value;
 public:
@@ -22,9 +26,10 @@ public:
     uint32_t getRow() const;
     uint32_t getColumn() const;
     uint32_t getValue() const;
+    std::set<uint32_t> getAdjacencyList() const;
 
     uint32_t getIndex() const;
-    bool getIsColored() const;
+    bool isColored() const;
     Color getFinalColor() const;
 
     void setFinalColor(Color color);
@@ -33,6 +38,15 @@ public:
 
     void updateValue(uint32_t newValue);
     void removeColorPossibility(Color color);
+
+    void addEdge(uint32_t to);
+    void addRowNeighbor(uint32_t neighborIndex);
+    void addColumnNeighbor(uint32_t neighborIndex);
+    void addQuadrantNeighbor(uint32_t neighborIndex);
+
+    const std::set<uint32_t>& getRowNeighbors() const;
+    const std::set<uint32_t>& getColumnNeighbors() const;
+    const std::set<uint32_t>& getQuadrantNeighbors() const;
 };
 
 
