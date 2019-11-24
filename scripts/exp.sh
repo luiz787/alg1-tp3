@@ -9,7 +9,6 @@ declare -a tests=("225"
 				"665"
 				"884"
 				"995")
-for i in "${tests[@]}"
 for iter in {1..100..1}; do
     for prob in "${tests[@]}" do
         echo "Running program for problem $prob, iteration $iter."
