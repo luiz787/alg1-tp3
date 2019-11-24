@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <chrono>
+#include <iomanip>
 #include "SudokuGraph.hpp"
 #include "Vertice.hpp"
 
@@ -22,9 +24,15 @@ int main(int argc, char**argv) {
             vertices.push_back(vertice);
         }
     }
+    auto start = std::chrono::high_resolution_clock::now(); // Inicia o relógio.
     SudokuGraph graph = SudokuGraph(columns, rows, vertices);
     graph.solve();
+    auto end = std::chrono::high_resolution_clock::now(); // Para o relógio.
 
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::duration<double>>(end - start); // Calcula o tempo gasto.
+
+    std::cout << std::fixed;
+    std::cout << "Tempo de execucao: " << std::setprecision(10) << elapsedTime.count() << std::endl;
     for (auto vertice : vertices) {
         delete(vertice);
     }
