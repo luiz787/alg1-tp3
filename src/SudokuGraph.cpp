@@ -165,7 +165,6 @@ void SudokuGraph::printAnswer(const uint32_t totalColoredVertices) const {
         }
         std::cout << std::endl;
     }
-    std::cout << "Colori " << totalColoredVertices << std::endl;
 }
 
 void SudokuGraph::removeAssignedColorFromNeighbors(Vertice *vertice) {
