@@ -10,7 +10,7 @@ declare -a tests=("225"
 				"884"
 				"995")
 for iter in {1..100..1}; do
-    for prob in "${tests[@]}" do
+    for prob in "${tests[@]}"; do
         echo "Running program for problem $prob, iteration $iter."
         input="dataset3/${prob}.txt"
         output="experimental_output/${prob}.out"
